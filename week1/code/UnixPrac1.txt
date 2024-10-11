@@ -1,0 +1,32 @@
+cd ~/documents/CMEECoursework/week1/data
+
+# 1
+# wc: word count -l: count only the number of lines.
+# * :  matches zero or more characters in file or directory names.
+
+wc -l *.fasta
+
+# 2
+# cat: reads the contents of the file and sends it to the terminal
+# | : takes the output of the command on its left and uses it as input for the command on its right.
+# tail is a command that outputs the last part of a file. 
+# The "-n +2" option tells tail to start outputting from line 2 onward (it skips the first line)
+
+cat E.coli.fasta | tail -n +2
+
+#3
+# wc: word count -c: specifies that you want to count bytes.
+
+tail -n +2 E.coli.fasta | wc -c
+
+#4
+# tr -d "\n": translates (or deletes) newline characters from the input. As a result, it combines all the lines into a single line of text.
+# grep: searches for occurrences of the string 
+# -o: tells grep to only output the matched parts, one per line.
+
+tail -n +2 E.coli.fasta | tr -d "\n" | grep -o ATGC | wc -l
+
+#5
+# counts the occurrences of nucleotides A and T, counts the occurrences of G and C, calculates the ratio of A + T to G + C, and then prints that ratio.
+
+Count_AT=$(grep -o '[AT]' E.coli.fasta | wc -l); Count_GC=$(grep -o '[GC]' E.coli.fasta | wc -l); ratio_final=$(echo "scale=5; $Count_AT/$Count_GC" | bc); echo $ratio_final
