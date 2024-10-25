@@ -1,3 +1,8 @@
+"""
+This script processes a list of taxa and their corresponding orders, 
+creating a dictionary that maps order names to sets of taxa.
+"""
+
 taxa = [ ('Myotis lucifugus','Chiroptera'),
          ('Gerbillus henleyi','Rodentia',),
          ('Peromyscus crinitus', 'Rodentia'),
