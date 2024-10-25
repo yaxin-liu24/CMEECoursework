@@ -10,11 +10,7 @@ Languages:
 
 Dependencies: 
 
-    ipdb (for debugging)
-    os: provides a way to use operating system-dependent functionality, such as file path manipulation and directory creation.
-    sys: This module provides access to command-line arguments and system-specific parameters.
-    re: This module is used for regular expression operations, allowing pattern matching in strings.
-    csv: This module provides functionality for reading from and writing to CSV (Comma-Separated Values) files.
+    This project doesn't have any dependencies.
 
 Installation: Guidelines for installing the project (if applicable), including dependencies.
 
