@@ -1,3 +1,13 @@
+"""
+This script processes a tuple containing bird species data, which includes their Latin names, common names, 
+and mean body masses. It prints each bird's information on a separate line in a formatted manner.
+
+The data is structured as a tuple of tuples, where each inner tuple contains:
+1. Latin name of the bird species
+2. Common name of the bird species
+3. Mean body mass (in grams) of the bird species
+"""
+
 birds = ( ('Passerculus sandwichensis','Savannah sparrow',18.7),
           ('Delichon urbica','House martin',19),
           ('Junco phaeonotus','Yellow-eyed junco',19.5),

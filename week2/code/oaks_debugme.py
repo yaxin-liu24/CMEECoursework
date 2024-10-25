@@ -1,6 +1,17 @@
-# sys: This module provides access to command-line arguments and system-specific parameters.
-# re: This module is used for regular expression operations, allowing pattern matching in strings.
-# csv: This module provides functionality for reading from and writing to CSV (Comma-Separated Values) files.
+"""
+This script processes a CSV file containing taxa data to identify and extract entries that belong to the oak genus (Quercus).
+It utilizes regular expressions to match oak species names and outputs the found oak species to a new CSV file.
+
+Modules used:
+- sys: Provides access to command-line arguments and system-specific parameters.
+- re: Enables pattern matching in strings using regular expressions.
+- csv: Facilitates reading from and writing to CSV (Comma-Separated Values) files.
+
+Usage:
+Run the script from the command line. Ensure the input CSV file exists at '../data/TestOaksData.csv' 
+and that you have write permissions for the output file at '../results/JustOaksData.csv'.
+"""
+
 import sys
 import re
 import csv
@@ -27,7 +38,13 @@ def is_an_oak(name):
 # return bool(re.match(r'Querc[us]{2,3}\b', name, re.IGNORECASE))
 
 def main(argv):
-# Reads a CSV file containing taxa data, checks each entry to see if it is an oak, and writes the oak entries to a new CSV file.
+    """
+    Reads a CSV file containing taxa data, checks each entry to see if it is an oak, 
+    and writes the oak entries to a new CSV file.
+
+    The input file is expected at '../data/TestOaksData.csv', and the output will 
+    be written to '../results/JustOaksData.csv'.
+    """
     with open('../data/TestOaksData.csv', 'r') as f, open('../results/JustOaksData.csv', 'w') as g:
         taxa = csv.reader(f)
         csvwrite = csv.writer(g)

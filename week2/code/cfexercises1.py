@@ -1,30 +1,49 @@
-# Calculate the square root of a given number.
-# Args:
-# x (float): The number to calculate the square root of.
-# Returns:
-# float: The square root of the input number.
+"""
+This script provides various mathematical functions including square root calculation, 
+finding the larger of two numbers, sorting three numbers, and calculating the factorial 
+using different approaches. It interacts with the user to demonstrate the functionality of each function.
+"""
+
 def foo_1(x):
+    """
+    Calculate the square root of a given number.
+
+    Args:
+        x (float): The number to calculate the square root of.
+
+    Returns:
+        float: The square root of the input number.
+    """
     return x ** 0.5
 
-# Return the larger of two numbers.
-# Args:
-# x (float): The first number.
-# y (float): The second number.
-# Returns:
-# float: The larger of the two input numbers.
 def foo_2(x, y):
+    """
+    Return the larger of two numbers.
+
+    Args:
+        x (float): The first number.
+        y (float): The second number.
+
+    Returns:
+        float: The larger of the two input numbers.
+    """
     if x > y:
         return x
     return y
 
-# Sort three numbers in ascending order.
-# Args:
-# x (float): The first number.
-# y (float): The second number.
-# z (float): The third number.
-# Returns:
-# list: A list containing the three numbers sorted in ascending order.
+
 def foo_3(x, y, z):
+    """
+    Sort three numbers in ascending order.
+
+    Args:
+        x (float): The first number.
+        y (float): The second number.
+        z (float): The third number.
+
+    Returns:
+        list: A list containing the three numbers sorted in ascending order.
+    """
     if x > y:
         tmp = y
         y = x
@@ -41,6 +60,15 @@ def foo_3(x, y, z):
 # Returns:
 # int: The factorial of the input number.
 def foo_4(x):
+    """
+    Calculate the factorial of a given non-negative integer using an iterative approach.
+
+    Args:
+        x (int): The non-negative integer to calculate the factorial of.
+
+    Returns:
+        int: The factorial of the input number.
+    """
     result = 1
     for i in range(1, x + 1):
         result *= i
@@ -53,7 +81,8 @@ def foo_4(x):
 # Returns:
 # int: The factorial of the input number.
     
-def foo_5(x):  # a recursive function that calculates the factorial of x
+def foo_5(x):  
+    """Recursive function to calculate the factorial of x."""
     if x == 1:
         return 1
     return x * foo_5(x - 1)
@@ -64,16 +93,21 @@ def foo_5(x):  # a recursive function that calculates the factorial of x
 # x (int): The non-negative integer to calculate the factorial of.
 # Returns:
 # int: The factorial of the input number.
-def foo_6(x):  # Calculate the factorial of x in a different way; no if statement involved
+def foo_6(x):  
+    """Calculate the factorial of x using a while loop."""
     facto = 1
     while x >= 1:
         facto *= x
         x -= 1
     return facto
 
-# Main function to execute user interactions and demonstrate the functionality of other functions.
-# Prompts the user for input for each function and prints the corresponding output.
+
 def main():
+    """
+    Main function to interact with the user and demonstrate the functionality 
+    of various mathematical functions provided in this script.
+    Prompts the user for input and prints the corresponding output for each function.
+    """
     # User inputs for each function
     x1 = float(input("Enter a number for square root calculation: "))
     print(f"Square root of {x1}: {foo_1(x1)}")

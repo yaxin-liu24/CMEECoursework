@@ -1,5 +1,14 @@
-# Average UK Rainfall (mm) for 1910 by month
-# http://www.metoffice.gov.uk/climate/uk/datasets
+"""
+This script analyzes the average UK rainfall (in mm) for the year 1910 by month.
+The data includes monthly rainfall figures, and the script performs the following tasks:
+
+1. Generates a list of months with rainfall greater than 100 mm using a list comprehension.
+2. Creates a list of month names with rainfall less than 50 mm using a list comprehension.
+3. Repeats the above two tasks using conventional loops for comparison.
+
+The source of the rainfall data can be found at:
+http://www.metoffice.gov.uk/climate/uk/datasets
+"""
 rainfall = (('JAN',111.4),
             ('FEB',126.1),
             ('MAR', 49.9),
