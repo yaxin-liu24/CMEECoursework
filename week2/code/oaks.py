@@ -8,6 +8,10 @@ taxa = [ 'Quercus robur',
        ]
 
 def is_an_oak(name):
+    """
+    Checks if a given species name is an oak species based on its scientific name.
+    The function assumes that oak species names start with "Quercus " (case-insensitive).
+    """
     return name.lower().startswith('quercus ')
 
 ##Using for loops
