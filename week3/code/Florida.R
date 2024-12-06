@@ -21,14 +21,11 @@ print(paste("P-value:", p_value))
 # visualize the random distribution
 # hist(random_corrs, main = "Random Correlation Coefficients", xlab = "Correlation") # nolint
 # abline(v = appropriate_corr, col = "red", lwd = 2) #mark the observed correlation coefficients # nolint
-## 设置输出为 PDF 文件，保存到 ../results 
+## set output as PDF，save to ../results 
 pdf("../results/Florida.pdf", width = 8, height = 6) 
-# 绘制直方图 
+# draw histgram
 hist(random_corrs, main = "Random Correlation Coefficients", xlab = "Correlation", col = "lightblue",border = "white") 
-# 添加观测相关系数的标记
 abline(v = appropriate_corr, col = "red", lwd = 2)  
-
-# 关闭 PDF 设备
 dev.off()
 
 # print the results

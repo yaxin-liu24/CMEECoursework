@@ -1,1 +1,16 @@
-en
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.fls
+*.fcb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+*.gz
+*.fdb_latexmk
+ 
+ 
+results/*
+!results/.gitkeep
