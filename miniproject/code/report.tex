@@ -1,0 +1,189 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}  % 处理图片
+\usepackage{float}     % 控制浮动体
+\usepackage{placeins}  % \FloatBarrier 以防止图片乱跑
+\usepackage{capt-of} 
+
+% 行距 & 行号
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+\usepackage{lineno}
+\linenumbers
+
+% 参考文献 & 公式支持
+\usepackage{natbib}
+\bibliographystyle{apalike}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+% 标题页
+\title{\textbf{Polynomial Regression Models Outperform Logistic and Gompertz Models for Quantifying Microbial Growth Dynamics}}
+\author{Yaxin Liu \\Silwood, Imperial College London}
+\date{\textbf{Word Count: 2778}} 
+\begin{document}
+
+\maketitle
+\newpage
+
+\begin{abstract}
+Microbial growth dynamics affect ecosystem function, bioengineering optimization, and disease transmission modeling. Logistic and Gompertz models are often used to describe S-shaped growth curves, but their applicability is limited when experimental data deviate from the ideal model. In this study, the fitting effects of quadratic regression, cubic regression, Logistic and Gompertz were compared. NLLS was used for parameter optimization, and the performance of the model was evaluated by R², AIC and BIC. The results show that the cubic regression and piecewise quadratic regression models are superior to Logistic and Gompertz models, where AIC/BIC further verifies the overall best fitting ability of the cubic regression. However, although the Logistic and Gompertz models have a low degree of fit, their parameters have biological significance and are still suitable for microbial ecology and bioengineering research. In general, When experimental data deviate from the ideal growth pattern, polynomial regression (such as cubic regression and piecewise quadratic regression) can more accurately describe growth dynamics.
+\end{abstract}
+
+\newpage
+
+\section{Introduction}
+Dynamic fluctuations in the number of biological populations are the core drivers of ecosystem function, and microbial growth patterns determine many key ecological processes, from carbon sequestration to pathogen transmission \citep{Sokol2022}. For example, \citet{Nguyen2021} showed in their study that dynamic changes in bacterial populations not only affect the carbon cycle, but may also accelerate or inhibit the rate of spread of pathogens. Understanding these growth laws is of great significance for ecosystem stability, environmental management, and bioengineering optimization. As early as the 19th century, Malthus proposed that population growth is controlled by resource constraints, and its basic logic is the game between exponential growth and environmental carrying capacity \citep{Pender1998}. In microbial systems, this principle is clearly demonstrated: the bacterial growth curve is typically divided into three phases - the lag phase, the exponential phase, and the stationary phase. The lag period involves the reprogramming of metabolic pathways and reserves energy for exponential explosive proliferation. The exponential period follows an almost ideal Malthusian growth pattern; eventually, resource depletion forces the population into a plateau \citep{Broswimmer1999}. The dynamic transformation of these stages not only reflects the survival strategy of microorganisms but also provides a basis for mathematical modeling to predict environmental adaptability and optimize experimental conditions. However, how to describe the different stages of the growth curve with appropriate mathematical models remains a scientific challenge. In earlier studies, scientists typically focused only on data from the exponential period, calculating maximum growth rates by simple straight-line fitting \citep{Motulsky2004}. However, with further research, it was realized that the growth process is highly nonlinear and more accurate mathematical models are needed to describe the complete S-shaped growth curve. At present, there are two main categories of growth modeling: mechanistic models, such as Logistic and Gompertz models, which are based on biological factors such as resource competition and metabolic rate, and can capture the basic mechanisms of growth. And phenomenological models driven by statistics, such as quadratic and cubic polynomial models, do not explain the biology of growth but use mathematical equations to fit the shape of growth curves. Both models have their merits and demerits, which are still controversial in academic circles. Mechanistic models are not always superior to empirical models, and while mechanistic models have more biological explanatory power, in some cases, empirical models may provide a better fit \citep{OConnor2007}. Secondly, model performance is affected by species characteristics. For example, the lag time, maximum growth rate, and metabolic flexibility of bacterial populations may affect the fit of different models \citep{MorenoGamez2020}. These uncertainties directly affect the accuracy of experimental design, data interpretation, and growth predictions, so systematically evaluating different types of mathematical models is critical to optimizing microbial growth studies. 
+
+My work focuses on comparing empirical models (quadratic/cubic) with mechanistic models (Logistic/Gompertz), establishing criteria for model selection. I conduct detailed analyses of polynomial and sigmoidal model fitting methodologies while comparatively evaluating their respective strengths and limitations. Besides, I use statistical indicators such as residual sum of squares, Akaike information criteria and Bayesian information criteria to quantitatively compare the fit of the models. In addition, there is also a  discussion part about the potential application of machine learning. It’s mainly discuss how machine learning can enhance traditional growth models by improving accuracy and automating analysis, suggesting new research directions.
+
+
+\section{Methods}
+
+\subsection{Computing Tools}
+I primarily use Python in VS Code's .ipynb environment for interactive analysis. Key libraries include: \textbf{pandas} (data processing), \textbf{scipy/lmfit} (statistics \& NLLS modeling), \textbf{matplotlib/seaborn} (visualization), \textbf{sklearn} (regression analysis). And because of Python’s comprehensive scientific computing ecosystem, efficient handling of large datasets, and integrated modeling-visualization workflow \citep{Filguiera2017}, I choose it.
+
+
+
+\subsection{Data Processing}
+Data cleaning is crucial for accurate model fitting and biological interpretation in microbial growth studies. This study's dataset includes microbial growth records under various temperatures and media, with core variables such as Time, Biomass, Species, Temp, and Medium Type. To ensure data quality and comparability, a systematic cleaning process was applied, including preprocessing, outlier detection, categorical variable normalization, and data structure optimization.First, redundant X columns were removed to fix formatting errors. No missing values were found, so imputation was unnecessary. To eliminate anomalies, records with negative Time or PopBio were discarded, and the interquartile range (IQR) method was used to detect extreme low values that might result from pipetting errors or contamination.Categorical variables were standardized by removing extra spaces, capitalizing PopBio\_units, and normalizing Time\_units formatting. Medium names were unified (e.g., "TSB" and "Tryptic Soy Broth" were merged). A unique experimental ID was assigned to each record for traceability. Duplicate records were identified and removed.The cleaned dataset was stored as CSV files for model fitting and comparative analysis. Finally, growth curves were visually inspected to ensure data distribution was reasonable.
+
+\subsection{Model Fitting}
+
+In the part of model fitting, I used the nonlinear least squares (NLLS) method to fit microbial growth data and evaluated the applicability of different mathematical models, including quadratic regression, cubic regression, Logistic, and Gompertz models. The Minimizer method from the \texttt{lmfit} library was used for parameter optimization, and the goodness of fit was quantified using \( R^2 \). If \( R^2 > 0.6 \), the experimental group was considered successfully fitted, and its parameters were stored. A unique experimental ID was assigned to all datasets and processed with \texttt{sanitize\_filename} to prevent storage and analysis issues due to long or irregular file names.
+
+\subsubsection{Quadratic Regression Model}
+
+The quadratic regression model, which is suitable for describing short-term growth trends, is defined as:
+\[
+N(t) = a t^2 + b t + c
+\]
+where \( a \), \( b \), and \( c \) are the parameters to be estimated, \( t \) represents time, and \( N(t) \) denotes biomass. Initial values were estimated using Ordinary Least Squares (OLS), and further optimized using \texttt{lmfit} to minimize the residual sum of squares (RSS).To capture abrupt growth rate changes, the first derivative (growth rate) was computed, and the second derivative's extreme points were used to identify the most significant inflection points. The curve was divided into two stages and fitted separately:
+\[
+N_1(t) = a_1 t^2 + b_1 t + c_1, \quad N_2(t) = a_2 t^2 + b_2 t + c_2
+\]
+where \( N_1(t) \) and \( N_2(t) \) describe growth dynamics in different phases. Initial parameters for both stages were estimated using OLS.
+
+\subsubsection{Cubic Regression Model}
+
+Additionally, I used the cubic regression model, given by:
+\[
+N(t) = a t^3 + b t^2 + c t + d
+\]
+where \( a \), \( b \), \( c \), and \( d \) are the parameters to be estimated. OLS was used for initial value estimation to ensure a stable fit. To handle abrupt growth rate changes, a two-stage cubic regression model was further introduced:
+\[
+N_1(t) = a_1 t^3 + b_1 t^2 + c_1 t + d_1, \quad N_2(t) = a_2 t^3 + b_2 t^2 + c_2 t + d_2
+\]
+Stage division followed the same method as the two-stage quadratic regression model, using derivative calculations to determine the transition point.
+
+\subsubsection{Logistic Growth Model}
+
+The Logistic growth model, commonly used to describe S-shaped growth curves with resource constraints, is defined as:
+\[
+N(t) = \frac{N_0 N_{\max} e^{r t}}{N_{\max} + N_0 (e^{r t} - 1)}
+\]
+where \( N_0 \) is the initial population size, \( N_{\max} \) is the carrying capacity, and \( r \) is the growth rate.Initial parameter estimation was performed as follows:
+- \( N_0 \): The first observed biomass value or a minimum threshold of \( 1 \times 10^{-3} \).
+- \( N_{\max} \): The last observed biomass value or \( 1.1 \times N_0 \), ensuring \( N_{\max} > N_0 \).
+- \( r \): The logarithmic growth rate, estimated as:
+  \[
+  r = \frac{\ln(N_{\max}) - \ln(N_0)}{t_{\max} - t_0}
+  \]
+
+\subsubsection{Gompertz Growth Model}
+
+The Gompertz growth model, which accounts for asymmetric S-shaped growth curves, is defined as:
+\[
+N(t) = N_0 + (N_{\max} - N_0) e^{-\exp \left( \frac{r_{\max} e (t_{\text{lag}} - t)}{(N_{\max} - N_0) \ln 10} + 1  \right)}
+\]
+where \( r_{\max} \) represents the maximum growth rate, \( t_{\text{lag}} \) is the lag phase duration, and \( N_0 \), \( N_{\max} \) are the initial and maximum population sizes.Initial parameter estimation:
+- \( N_0 \): 5\% quantile of biomass data, ensuring robustness against outliers.
+- \( N_{\max} \): 95\% quantile of biomass data**, providing an upper limit estimate.
+- \( r_{\max} \): Estimated using:
+  \[
+  r_{\max} = \max\left( \frac{dN}{dt} \right) / (N_{\max} - N_0)
+  \]
+  with constraints \( 0.001 \leq r_{\max} \leq 3 \).
+- \( t_{\text{lag}} \): Identified as the time point where \( \frac{dN}{dt} \) is minimized:
+  \[
+  t_{\text{lag}} = \arg\min\left( \frac{dN}{dt} \right)
+  \]
+
+\subsection{Model Performance Comparison}
+
+To compare model fitting performance, we evaluated three key metrics: Residual Sum of Squares (RSS), Akaike Information Criterion (AIC), and Bayesian Information Criterion (BIC). These metrics assess model performance from three perspectives: fitting error, model simplicity, and statistical robustness.The formulas used are as follows:
+
+\begin{itemize}
+    \item Residual Sum of Squares (RSS):
+    \[
+    RSS = \sum (y_{\text{true}} - y_{\text{pred}})^2
+    \]
+    
+    \item Akaike Information Criterion (AIC):
+    \[
+    AIC = n \ln \left(\frac{RSS}{n}\right) + 2k
+    \]
+    where \( n \) is the number of data points and \( k \) is the number of model parameters.
+    
+    \item Bayesian Information Criterion (BIC):
+    \[
+    BIC = n \ln \left(\frac{RSS}{n}\right) + k \ln(n)
+    \]
+\end{itemize}
+
+
+\section{Results}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lcc}
+        \hline
+        \textbf{Model} & \textbf{Successful Fits} & \textbf{Success Rate} \\
+        \hline
+        Quadratic Model & 247 & 86.67\% \\
+        Two-Stage Quadratic Model & 261 & 91.58\% \\
+        Cubic Model & 268 & 94.04\% \\
+        Logistic Model & 236 & 82.81\% \\
+        Gompertz Model & 162 & 56.84\% \\
+        \hline
+    \end{tabular}
+    \caption{Model fitting success rates}
+\end{table}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{random_combined_model_plot.pdf}
+    \caption{The fitting of Quadratic, Cubic, Logistic and Gompertz to a group of experimental data is presented}
+    \label{fig:enter-label}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{aic_bic_distribution.pdf}
+    \caption{Left: AIC value distribution of different models, showing the information loss of each model when fitting data.
+Right: BIC value distribution for different models, reflecting the effect of model complexity on fit quality}
+    \label{fig:enter-label}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\linewidth]{model_ranking_analysis.pdf}
+    \caption{Left: Optimal model proportion based on AIC selection
+Right: The proportion of optimal models selected based on BIC}
+    \label{fig:enter-label}
+\end{figure}
+\FloatBarrier  %
+\section{Discussion}
+The results show that there are significant differences in the performance of different mathematical models in fitting microbial growth curves. The pseudo-synthetic power of the cubic regression model was the highest (94.04\%), followed by the two-stage quadratic regression model (91.58\%), and the success rate of the Gompertz model was the lowest (56.84\%). This result shows that the polynomial regression model performs better in the data fitting and can capture the nonlinear growth trend better. In particular, the two-stage quadratic regression model shows strong adaptability in describing the growth rate changes in the lag period, exponential period and stable period, which is highly consistent with the classical model of microbial growth. By further analyzing AIC and BIC scores, I found that the cubic regression model had the lowest AIC and BIC values in most datasets, indicating that the model achieved a good balance between fit quality and model complexity. However, under some experimental conditions, quadratic and two-stage quadratic regression models have lower AIC/BIC values, indicating that they may be more suitable than cubic models for a particular dataset. In contrast, the Logistic and Gompertz models have high AIC/BIC values, which means that they have poor fitting problems in some datasets. Although Logistic and Gompertz models have strong theoretical support for describing typical S-shaped growth curves, their ability to fit is significantly reduced when experimental data deviate from the ideal S-shaped curve, such as when affected by environmental perturbations or nutrient fluctuations.
+
+Obviously there are some limitations to the study. Although the triple regression and two-stage quadratic regression models are excellent in terms of fitting accuracy, it is still necessary to pay attention to their application range. First of all, although the triple regression model can flexibly fit complex growth patterns, its parameters lack direct biological explanations. That is, its coefficients (a,b,c,d) do not directly correspond to biological processes of microbial growth (such as maximum growth rate, environmental carrying capacity, etc.) \citep{MitchellOlds1987}. In contrast, although the Logistic and Gompertz models had poor fitting effect in some datasets, their parameters such as maximum population density $N_{\max}$ and growth rate $r$ had clear biological significance. It is still of great value in microbial ecology and bioengineering research \citep{McKellar1997}. Second, two-stage regression models may face challenges in experimental datasets with less data or more noise. The stage division is a mutation point based on the growth rate, but when the experimental data is insufficient or the noise is large, the identification of the inflection point may be disturbed, leading to the instability of the segmented regression. In addition, under certain experimental conditions, polynomial regression (especially cubic regression) can suffer from overfitting, in which the model performs well on the training data but generalizes poorly when predicting other growth data. In addition, the analysis in this study is based on the nonlinear least square method (NLLS) for parameter estimation, which depends on the setting of initial parameter values, and different initial values may affect the convergence of the optimization process. Although OLS (ordinary least square method) has been used for initial value estimation in this study, and biology-driven parameter setting methods have been used in Logistic and Gompertz models, the possibility of fitting failure due to poor initial values in some datasets cannot be completely ruled out.
+
+In order to further improve the applicability and biological explanatory power of the model, I believe that future research can combine machine learning methods to carry out automatic model selection. In practical applications, the growth curves of different microbial populations may be affected by many factors, such as growth rate, lag period, maximum biomass, etc., which determine the most suitable data fitting model \citep{Broswimmer1999}. Therefore, a feature engineering and model matching system can be built to automatically extract key features from experimental data, and combine experimental environmental factors such as temperature to build labeled training data sets. Then using supervised learning methods, such as random forest, train a model selector that can learn how different mathematical models (Logistic, polynomial, Gompertz, etc.) perform under different experimental conditions based on historical data and automatically match the optimal mathematical model. In this way, when faced with new experimental data, the most appropriate model can be predicted quickly and accurately, thus avoiding the limitations of traditional methods that rely on AIC/BIC scores for screening. Compared with score-based model selection strategies, machine learning methods can reduce computational overhead, improve fitting efficiency, and ensure more robust model selection under different experimental conditions. In addition, it may be difficult for a single mathematical model to simultaneously take into account biological explanation and high-precision fitting, so hybrid modeling can also be carried out. For example, biological mechanism items of Logistic model can be combined with polynomial correction items, and data-driven adjustment items can be added to the traditional biological model to correct deviations caused by experimental perturbations and environmental factors. The parameter estimation is realized to make the mechanism parameters strictly conform to the biological significance and improve the adaptability to complex growth patterns.
+
+
+
+\section{Conclusion}
+My research surface polynomial regression models (especially cubic regression and two-stage quadratic regression) perform better than Logistic and Gompertz models in fitting microbial growth curves, but the applicability of different models depends on specific data characteristics. Future research can combine machine learning and hybrid modeling strategies to optimize the fitting of microbial growth curves and provide more accurate mathematical tools for microbial ecology, bioengineering, and disease transmission modeling.
+
+\newpage
+\bibliography{references}
+
+\end{document}
