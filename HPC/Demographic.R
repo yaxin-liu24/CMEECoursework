@@ -25,7 +25,17 @@ multinomial <- function(pool, probs) {
   x = as.vector(rmultinom(n=11, pool, probd)) # sample
   return(x[1:length(probs)])
 }
-
+sum_vect <- function(x, y) {
+  len_x = length(x)
+  len_y = length(y)
+  if (len_x < len_y) {
+    x = c(x, rep(0, len_y - len_x))
+  }
+  if (len_x > len_y) {
+    y = c(y, rep(0, len_x - len_y))
+  }
+  return(x + y)
+}
 survival_maturation <- function(state,growth_matrix){
   new_state <- rep(0, length(state)) # 1. new population state
   for (i in 1:length(state)){

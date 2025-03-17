@@ -166,7 +166,7 @@ question_2 <- function(){
   # Return a written answer
   return("Stochastic simulations produce less smooth curves than deterministic simulations because random variation in birth, death, and survival events introduces noise. This randomness is absent in deterministic simulations, which rely on fixed average rates for predictions.")
 }
-question_2
+
 
 # Questions 3 and 4 involve writing code elsewhere to run your simulations on the cluster
 
@@ -174,23 +174,154 @@ question_2
 # Question 5
 question_5 <- function(){
   
-  png(filename="question_5", width = 600, height = 400)
-  # plot your graph here
-  Sys.sleep(0.1)
+  # Get all RData files
+  files <- list.files(pattern = "*.RData")
+  
+  # Store extinction statistics
+  extinction_counts <- c(0, 0, 0, 0)
+  total_simulations <- c(0, 0, 0, 0)
+  
+  # Walk through each file
+  for (file in files) {
+    load(file)  
+    
+    # Extract iter value (number in file name)
+    iter <- as.numeric(gsub("\\D", "", file))  # 提取文件名中的数字
+    
+    # Calculates the initial conditions for the file
+    condition_index <- (iter %% 4)
+    if (condition_index == 0) {
+      condition_index <- 4  # iter=4,8,12... 对应初始条件 4
+    }
+    
+    # Count the number of extinctions in this file（final population size = 0）
+    extinct_count <- sum(sapply(results, function(sim) tail(sim, 1) == 0))
+    
+    # Update statistics
+    extinction_counts[condition_index] <- extinction_counts[condition_index] + extinct_count
+    total_simulations[condition_index] <- total_simulations[condition_index] + length(results)
+  }
+  
+  # Calculated extinction ratio
+  proportions <- extinction_counts / total_simulations
+  
+  # Create data frame
+  df <- data.frame(
+    Initial_Condition = c("Adults Large", "Adults Small", "Mixed Large", "Mixed Small"),
+    Extinction_Proportion = proportions
+  )
+  
+  
+  png(filename = "question_5.png", width = 600, height = 400)
+  
+  barplot(df$Extinction_Proportion, 
+          names.arg = df$Initial_Condition, 
+          col = "steelblue", 
+          main = "Extinction Proportion by Initial Condition",
+          xlab = "Initial Condition",
+          ylab = "Proportion of Extinctions")
+  
+  Sys.sleep(0.1)  
   dev.off()
   
-  return("type your written answer here")
+  # Find out which species are most at risk of extinction
+  most_extinct <- df$Initial_Condition[which.max(df$Extinction_Proportion)]
+  
+  
+  return(paste("The population with initial condition '", most_extinct, 
+               "' was most likely to go extinct. This suggests that lower initial population sizes or weaker population structures increase extinction risk.", sep = ""))
 }
 
+
+
 # Question 6
-question_6 <- function(){
+question_6 <- function() {
+  library(ggplot2)
   
-  png(filename="question_6", width = 600, height = 400)
-  # plot your graph here
-  Sys.sleep(0.1)
-  dev.off()
+  # projection_matrix
+  growth_matrix <- matrix(c(0.1, 0.0, 0.0, 0.0,
+                            0.5, 0.4, 0.0, 0.0,
+                            0.0, 0.4, 0.7, 0.0,
+                            0.0, 0.0, 0.2, 0.4),
+                          nrow = 4, ncol = 4, byrow = TRUE)
   
-  return("type your written answer here")
+  reproduction_matrix <- matrix(c(0.0, 0.0, 0.0, 2.6,
+                                  0.0, 0.0, 0.0, 0.0,
+                                  0.0, 0.0, 0.0, 0.0,
+                                  0.0, 0.0, 0.0, 0.0),
+                                nrow = 4, ncol = 4, byrow = TRUE)
+  
+  projection_matrix <- reproduction_matrix + growth_matrix  # calculate projection_matrix
+  
+  # Get all RData files that store simulation results
+  data_files <- list.files(pattern = "results_iter_.*\\.RData$")
+  
+  if (length(data_files) == 0) {
+    stop("No simulation data found. Ensure the RData files are in the working directory.")
+  }
+  
+  # Read all simulation data
+  all_data <- list()
+  
+  for (file in data_files) {
+    load(file)  # Load the results list
+    condition <- ifelse(grepl("_3", file), "big_spread", "small_spread")
+    all_data[[condition]] <- append(all_data[[condition]], list(results))
+  }
+  # Calculate average population size
+  compute_mean_population <- function(results_list) {
+    num_simulations <- length(results_list)
+    simulation_length <- length(results_list[[1]])
+    population_trend <- matrix(0, nrow = simulation_length, ncol = num_simulations)
+    
+    for (i in 1:num_simulations) {
+      population_trend[, i] <- sapply(results_list[[i]], sum)
+    }
+    
+    return(rowMeans(population_trend))
+  }
+  
+  mean_pop_IC3 <- compute_mean_population(all_data$big_spread)
+  mean_pop_IC4 <- compute_mean_population(all_data$small_spread)
+  
+  # Compute deterministic models
+  deterministic_simulation <- function(initial_state, projection_matrix, steps) {
+    pop_size <- numeric(steps)
+    pop_size[1] <- sum(initial_state)
+    
+    for (t in 2:steps) {
+      initial_state <- projection_matrix %*% initial_state
+      pop_size[t] <- sum(initial_state)
+    }
+    
+    return(pop_size)
+  }
+  
+  deterministic_IC3 <- deterministic_simulation(c(25, 25, 25, 25), projection_matrix, length(mean_pop_IC3))
+  deterministic_IC4 <- deterministic_simulation(c(2.5, 2.5, 2.5, 2.5), projection_matrix, length(mean_pop_IC4))
+  
+  #  drift compute
+  deviation_data <- data.frame(
+    Time = 1:length(mean_pop_IC3),
+    Deviation_IC3 = mean_pop_IC3 / deterministic_IC3,
+    Deviation_IC4 = mean_pop_IC4 / deterministic_IC4
+  )
+  
+  # plot
+  plot <- ggplot(deviation_data, aes(x = Time)) +
+    geom_line(aes(y = Deviation_IC3, color = "Initial Condition 3 (big spread)")) +
+    geom_line(aes(y = Deviation_IC4, color = "Initial Condition 4 (small spread)")) +
+    labs(
+      title = "Deviation of Stochastic Model from Deterministic Model",
+      x = "Time",
+      y = "Deviation (Stochastic / Deterministic)",
+      color = "Initial Condition"
+    ) +
+    theme_minimal()
+  
+  ggsave("question_6.png", plot, width = 6, height = 4, dpi = 300)
+  
+  return("For initial condition 3 (big spread), the deterministic model is more appropriate because larger initial populations reduce the effects of stochasticity. In contrast, for initial condition 4 (small spread), stochastic effects are more pronounced, leading to greater deviations from the deterministic model.")
 }
 
 
@@ -557,13 +688,72 @@ plot_neutral_cluster_results <- function(){
 # I suggest you only attempt these if you've done all the main questions. 
 
 # Challenge question A
-Challenge_A <- function(){
+Challenge_A <- function() {
+  # Load required library
+  library(ggplot2)
   
-  png(filename="Challenge_A", width = 600, height = 400)
-  # plot your graph here
-  Sys.sleep(0.1)
-  dev.off()
+  # Get all simulation result files
+  data_files <- list.files(pattern = "results_iter_.*\\.RData$")
   
+  if (length(data_files) == 0) {
+    stop("No simulation data found. Ensure the RData files are in the working directory.")
+  }
+  
+  # Initialize a list to store all data
+  all_data <- list()
+  
+  # Parse all simulation results
+  simulation_counter <- 1  # Unique identifier for each simulation
+  for (file in data_files) {
+    load(file)  # Load the results list
+    
+    # Determine the initial condition based on the file name or a known variable
+    if (grepl("_1", file)) {
+      initial_condition <- "large_adult"
+    } else if (grepl("_2", file)) {
+      initial_condition <- "small_adult"
+    } else if (grepl("_3", file)) {
+      initial_condition <- "large_mixed"
+    } else {
+      initial_condition <- "small_mixed"
+    }
+    
+    # Process `results` variable: each simulation contains 150 runs, each with 120 time steps
+    for (sim in 1:length(results)) {
+      sim_data <- data.frame(
+        simulation_number = simulation_counter,
+        initial_condition = initial_condition,
+        time_step = 0:(length(results[[sim]]) - 1),  # Time steps start from 0
+        population_size = sapply(results[[sim]], sum)  # Compute total population size at each time step
+      )
+      all_data[[length(all_data) + 1]] <- sim_data
+      simulation_counter <- simulation_counter + 1
+    }
+  }
+  
+  # Combine all data into a single dataframe
+  population_size_df <- do.call(rbind, all_data)
+  
+  # Optional: Limit data size to prevent overcrowding in the plot (uncomment to enable)
+  # population_size_df <- population_size_df[sample(nrow(population_size_df), size = min(10000, nrow(population_size_df))), ]
+  
+  # Generate the optimized plot
+  plot <- ggplot(population_size_df, aes(x = time_step, y = population_size, 
+                                         group = simulation_number, colour = initial_condition)) +
+    geom_line(alpha = 0.05) +  # Reduce transparency to avoid excessive overlapping
+    facet_wrap(~initial_condition) +  # Separate plots for each initial condition
+    labs(title = "Stochastic Simulation of Population Size",
+         x = "Time Step",
+         y = "Population Size",
+         colour = "Initial Condition") +
+    theme_bw() +  # Use a white background for better readability
+    theme(legend.position = "bottom")  # Move the legend to the bottom
+  
+  # Save the plot
+  ggsave("Challenge_A.png", plot, width = 8, height = 6, dpi = 300)
+  
+  # Return the processed data frame
+  return(population_size_df)
 }
 
 # Challenge question B
