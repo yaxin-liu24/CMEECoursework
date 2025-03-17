@@ -4,10 +4,10 @@
 # EXACTLY the same function and parameter names and beware that you may lose
 # marks if it doesn't work properly because of not using the pro-forma.
 
-name <- "Your Name"
-preferred_name <- "Name"
-email <- "abc123@imperial.ac.uk"
-username <- "abc123"
+name <- "Yaxin Liu"
+preferred_name <- "Yaxin"
+email <- "yaxin.liu24@imperial.ac.uk"
+username <- "yaxin"
 
 # Please remember *not* to clear the work space here, or anywhere in this file.
 # If you do, it'll wipe out your username information that you entered just
@@ -33,6 +33,7 @@ state_initialise_spread = function(num_stages, initial_size){
   if (remainder>0){
     state[1:remainder]=state[1:remainder]+1
   }
+  return(state)
 }
 
 # Question 1
@@ -57,10 +58,10 @@ question_1 <- function(){
   population_2 = deterministic_simulation(initial_state2, projection_matrix, simulation_length)
   # png(filename="question_1", width = 600, height = 400)
   # plot your graph here
-  # 打开绘图设备
+  
   library(ggplot2)
   
-  # 创建数据框
+  
   time_steps <- 0:simulation_length
   data <- data.frame(
     Time = rep(time_steps, 2),
@@ -68,20 +69,20 @@ question_1 <- function(){
     Condition = rep(c("All Adults", "Even Distribution"), each = length(time_steps))
   )
   
-  # 强行展示图表
-  dev.new()  # 打开一个新的图形设备（RStudio 或操作系统支持的设备）
+  
+  dev.new()  
   p <- ggplot(data, aes(x = Time, y = Population, color = Condition)) +
-    geom_line(size = 1) +  # 绘制线条
+    geom_line(size = 1) +  
     labs(
       title = "Population Dynamics: Two Initial Conditions",
       x = "Time (Steps)",
       y = "Total Population Size",
-      color = "Initial Condition"  # 图例标题
+      color = "Initial Condition"  
     ) +
-    theme_minimal() +  # 设置主题
+    theme_minimal() +  
     theme(
-      plot.title = element_text(hjust = 0.5, size = 14),  # 标题居中
-      legend.position = "top"  # 图例放在顶部
+      plot.title = element_text(hjust = 0.5, size = 14),  
+      legend.position = "top"  
     )
   print(p)
   
@@ -232,23 +233,23 @@ neutral_step <- function(community){
 
 # Question 12
 neutral_generation <- function(community){
-  # 获取社区中个体的数量
+  # Get the number of individuals in the community
   n <- length(community)
   
-  # 确定一个世代所需的中性步骤次数
-  # 如果 n 为偶数，则 steps = n/2；如果 n 为奇数，则随机选择 floor(n/2) 或 ceiling(n/2)
+  # Determine the number of neutral steps required for a generation
+  # If n is even, then steps = n/2; If n is odd, randomly select floor(n/2) or ceiling(n/2)
   if (n %% 2 == 0) {
     steps <- n / 2
   } else {
     steps <- sample(c(floor(n / 2), ceiling(n / 2)), 1)
   }
   
-  # 执行多个中性步骤来模拟一个世代的变化
+  # Perform multiple neutral steps to simulate a generational change
   for (i in 1:steps) {
     community <- neutral_step(community)
   }
   
-  # 返回经过一个世代后的社区状态
+  # Return to the state of the community after a generation
   return(community)
 }
 
@@ -285,7 +286,7 @@ question_14 <- function() {
   richness_ts <- neutral_time_series(community, duration = 200)
   
   
-  png(filename="question_14", width = 600, height = 400)
+  png(filename="question_14.png", width = 600, height = 400)
   # plot your graph here
   plot(richness_ts, type = "l",
        xlab = "Generation",
@@ -373,33 +374,26 @@ neutral_time_series_speciation <- function(community,speciation_rate,duration)  
 
 # Question 18
 question_18 <- function() {
-  png(filename="question_18", width = 600, height = 400)
-  # plot your graph here
-  # Set simulation parameters
+  
+  png(filename = "question_18.png", width = 600, height = 400)
+  
+  # plot
   community_size <- 100
   speciation_rate <- 0.1
   duration <- 200
   
-  # Create two different initial communities:
-  # - Maximal diversity: each individual is a unique species.
   community_max <- init_community_max(community_size)
-  # - Minimal diversity: all individuals belong to the same species.
   community_min <- init_community_min(community_size)
   
-  # Run the simulation with speciation for both initial conditions.
-  # neutral_time_series_speciation returns a vector of species richness over generations.
   richness_max <- neutral_time_series_speciation(community_max, speciation_rate, duration)
   richness_min <- neutral_time_series_speciation(community_min, speciation_rate, duration)
   
-  # Plot the time series for the maximal diversity initial condition in red.
   plot(richness_max, type = "l", col = "red", lwd = 2,
        xlab = "Generation", ylab = "Species Richness",
        main = "Neutral Model Simulation with Speciation")
   
-  # Overlay the time series for the minimal diversity initial condition in blue.
   lines(richness_min, type = "l", col = "blue", lwd = 2)
   
-  # Add a legend to differentiate the two curves.
   legend("topright", legend = c("Max Diversity", "Min Diversity"),
          col = c("red", "blue"), lwd = 2)
   
@@ -408,6 +402,8 @@ question_18 <- function() {
   
   return("The plot demonstrates that regardless of whether the simulation starts with maximal or minimal diversity, the neutral model with speciation converges to a similar dynamic equilibrium in species richness over time. This occurs because the stochastic processes of random drift and speciation eventually override the influence of the initial conditions, leading to a characteristic equilibrium state.")
 }
+
+
 # Question 19
   species_abundance <- function(community) {
     abundances <- table(community) 
@@ -417,7 +413,7 @@ question_18 <- function() {
 # Question 20
   octaves <- function(abundance_vector) {
     if (length(abundance_vector) == 0) {
-      return(numeric(0)) # 返回空数值向量
+      return(numeric(0)) # Returns an empty value vector
     }
     
     octave_classes <- floor(log2(abundance_vector)) + 1
@@ -479,7 +475,7 @@ question_22 <- function() {
   mean_octave_min <- Reduce(sum_vect, octaves_min) / length(octaves_min)
   
   # Plot results
-  png(filename="question_22", width = 600, height = 400)
+  png(filename="question_22.png", width = 600, height = 400)
   par(mfrow = c(1, 2))  # Split plot area into two panels
   
   barplot(mean_octave_max, col = "red", main = "Max Diversity Init", 
@@ -573,21 +569,167 @@ Challenge_A <- function(){
 # Challenge question B
 Challenge_B <- function() {
   
-  png(filename="Challenge_B", width = 600, height = 400)
-  # plot your graph here
-  Sys.sleep(0.1)
+  png(filename="Challenge_B.png", width = 600, height = 400)
+  
+  # Function to calculate confidence intervals
+  compute_confidence_interval <- function(data, confidence = 0.972) {
+    mean_values <- colMeans(data)
+    sem <- apply(data, 2, function(x) sd(x) / sqrt(length(x)))
+    ci_range <- qt((1 + confidence) / 2, df = nrow(data) - 1) * sem
+    return(list(mean = mean_values, lower = mean_values - ci_range, upper = mean_values + ci_range))
+  }
+  
+  # Simulation parameters
+  community_size <- 100
+  speciation_rate <- 0.1
+  num_simulations <- 50
+  duration <- 200
+  
+  # Store simulation results
+  richness_max_simulations <- matrix(NA, nrow = num_simulations, ncol = duration)
+  richness_min_simulations <- matrix(NA, nrow = num_simulations, ncol = duration)
+  
+  for (sim in 1:num_simulations) {
+    community_max <- init_community_max(community_size) # Max diversity
+    community_min <- init_community_min(community_size) # Min diversity
+    
+    for (gen in 1:duration) {
+      community_max <- neutral_generation_speciation(community_max, speciation_rate)
+      community_min <- neutral_generation_speciation(community_min, speciation_rate)
+      
+      richness_max_simulations[sim, gen] <- species_richness(community_max)
+      richness_min_simulations[sim, gen] <- species_richness(community_min)
+    }
+  }
+  
+  # Compute mean and confidence intervals
+  ci_max <- compute_confidence_interval(richness_max_simulations)
+  ci_min <- compute_confidence_interval(richness_min_simulations)
+  
+  # Estimate equilibrium time: when richness change over last 20 generations is <1%
+  equilibrium_max <- min(which(abs(diff(ci_max$mean[(duration - 20):duration])) < 0.01 * ci_max$mean[duration - 20]))
+  equilibrium_min <- min(which(abs(diff(ci_min$mean[(duration - 20):duration])) < 0.01 * ci_min$mean[duration - 20]))
+  
+  equilibrium_gen <- max(ifelse(is.finite(equilibrium_max), equilibrium_max, duration),
+                         ifelse(is.finite(equilibrium_min), equilibrium_min, duration))
+  
+  # Plot results
+  plot(
+    1:duration, ci_max$mean, type="l", col="red", lwd=2,
+    xlab="Generations", ylab="Species Richness",
+    main="Species Richness Over Generations with 97.2% CI"
+  )
+  lines(1:duration, ci_min$mean, col="blue", lwd=2)
+  
+  polygon(
+    c(1:duration, rev(1:duration)),
+    c(ci_max$upper, rev(ci_max$lower)),
+    col=rgb(1,0,0,0.2), border=NA
+  )
+  
+  polygon(
+    c(1:duration, rev(1:duration)),
+    c(ci_min$upper, rev(ci_min$lower)),
+    col=rgb(0,0,1,0.2), border=NA
+  )
+  
+  abline(v=equilibrium_gen, lty=2, col="black")
+  legend("topright", legend=c("Max Diversity", "Min Diversity"),
+         col=c("red", "blue"), lwd=2)
+  
+  
   dev.off()
   
+  # Return equilibrium estimate
+  return(paste("The system reaches dynamic equilibrium in approximately", equilibrium_gen, "generations."))
 }
 
 # Challenge question C
-Challenge_B <- function() {
+Challenge_C <- function() {
+  # Ensure correct filename format
+  png(filename="Challenge_C.png", width = 600, height = 400)
   
-  png(filename="Challenge_C", width = 600, height = 400)
-  # plot your graph here
-  Sys.sleep(0.1)
+  # Define a function to create a random community with specific initial species richness
+  # Each individual has equal probability of taking any species identity
+  init_community_random <- function(size, species_count) {
+    # Ensure species count does not exceed community size
+    species_count <- min(species_count, size)
+    # Randomly select 'size' individuals from species IDs 1 to species_count, allowing repetition
+    community <- sample(1:species_count, size, replace = TRUE)
+    return(community)
+  }
+  
+  # Function to calculate confidence intervals
+  compute_confidence_interval <- function(data, confidence = 0.95) {
+    mean_values <- colMeans(data)
+    sem <- apply(data, 2, function(x) sd(x) / sqrt(length(x)))
+    ci_range <- qt((1 + confidence) / 2, df = nrow(data) - 1) * sem
+    return(list(mean = mean_values, lower = mean_values - ci_range, upper = mean_values + ci_range))
+  }
+  
+  # Simulation parameters
+  community_size <- 100
+  speciation_rate <- 0.1
+  num_simulations <- 30
+  duration <- 200
+  
+  # Define the range of initial species richness values to test
+  # From 1 to community_size, selecting representative values
+  initial_richness_values <- c(1, 5, 10, 25, 50, 75, 100)
+  
+  # Create a color for each initial richness value
+  colors <- rainbow(length(initial_richness_values))
+  
+  # Initialize the plot
+  plot(NULL, xlim=c(1, duration), ylim=c(0, 50), 
+       xlab="Generations", ylab="Species Richness",
+       main="Species Richness Over Time for Different Initial Richness Values")
+  
+  # Prepare text for legend
+  legend_text <- character(length(initial_richness_values))
+  
+  # Run simulations for each initial richness value
+  for (i in 1:length(initial_richness_values)) {
+    richness_value <- initial_richness_values[i]
+    legend_text[i] <- paste("Initial Richness:", richness_value)
+    
+    # Store simulation results
+    richness_simulations <- matrix(NA, nrow = num_simulations, ncol = duration)
+    
+    # Run multiple simulations
+    for (sim in 1:num_simulations) {
+      # Create a random community with specific initial richness
+      community <- init_community_random(community_size, richness_value)
+      
+      # Record species richness for each generation
+      for (gen in 1:duration) {
+        community <- neutral_generation_speciation(community, speciation_rate)
+        richness_simulations[sim, gen] <- species_richness(community)
+      }
+    }
+    
+    # Calculate means and confidence intervals
+    ci <- compute_confidence_interval(richness_simulations)
+    
+    # Plot the mean line
+    lines(1:duration, ci$mean, col=colors[i], lwd=2)
+    
+    # Add confidence intervals
+    polygon(
+      c(1:duration, rev(1:duration)),
+      c(ci$upper, rev(ci$lower)),
+      col=adjustcolor(colors[i], alpha.f=0.2), border=NA
+    )
+  }
+  
+  # Add legend
+  legend("topright", legend=legend_text, col=colors, lwd=2, cex=0.8)
+  
+  # Ensure graphics device is closed
   dev.off()
-
+  
+  # Return result
+  return("Graph showing species richness over time for different initial richness values has been saved as Challenge_C.png")
 }
 
 # Challenge question D
