@@ -84,9 +84,6 @@ question_1 <- function(){
       plot.title = element_text(hjust = 0.5, size = 14),  
       legend.position = "top"  
     )
-  print(p)
-  
-
   
   return(paste("The initial distribution of individuals across life stages affects the early growth dynamics.",
                "When all individuals are adults, the population grows faster initially due to high reproduction rates.",
@@ -326,6 +323,7 @@ question_6 <- function() {
 
 
 # Section Two: Individual-based ecological neutral theory simulation 
+
 
 # Question 7
 species_richness <- function(community){
@@ -663,25 +661,85 @@ neutral_cluster_run <- function(speciation_rate, size, wall_time, interval_rich,
 # the cluster
 
 # Question 26 
+
 process_neutral_cluster_results <- function() {
+  files <- list.files(pattern = "neutral_output_.*\\.rda")  # Read the data file
+  sizes <- c(500, 1000, 2500, 5000)  # 4 community sizes
+  combined_results <- list("500" = NULL, "1000" = NULL, "2500" = NULL, "5000" = NULL)
   
-  
-  combined_results <- list() #create your list output here to return
-  # save results to an .rda file
-  
-}
-
-plot_neutral_cluster_results <- function(){
-
-    # load combined_results from your rda file
-  
-    png(filename="plot_neutral_cluster_results", width = 600, height = 400)
-    # plot your graph here
-    Sys.sleep(0.1)
-    dev.off()
+  for (file in files) {
+    load(file)  
     
-    return(combined_results)
+    # Ensure abundance_list and size exist 
+    if (exists("abundance_list") && exists("size")) {
+      size_key <- as.character(size)  
+      
+      if (size_key %in% names(combined_results)) {
+        combined_results[[size_key]] <- append(combined_results[[size_key]], abundance_list)
+      } else {
+        warning(paste("Unknown community size in file:", file))
+      }
+    } else {
+      warning(paste("Warning: No abundance_list or size in", file))
+    }
+  }
+  
+  # calculate mean
+  for (size in sizes) {
+    size_key <- as.character(size)
+    
+    if (!is.null(combined_results[[size_key]]) && length(combined_results[[size_key]]) > 0) {
+      combined_results[[size_key]] <- Reduce("+", combined_results[[size_key]]) / length(combined_results[[size_key]])
+    } else {
+      combined_results[[size_key]] <- numeric(0)  # Set to empty vector, not NA
+    }
+  }
+  
+  save(combined_results, file = "combined_results.rda")
+  print("Processing complete. Results saved in combined_results.rda.")
 }
+
+# Function to load processed results and plot bar graphs
+plot_neutral_cluster_results <- function() {
+  # Load the calculated mean data
+  if (!file.exists("combined_results.rda")) {
+    stop("Error: combined_results.rda file not found. Run process_neutral_cluster_results() first.")
+  }
+  
+  load("combined_results.rda")
+  
+  if (!exists("combined_results")) {
+    stop("Error: combined_results object could not be loaded.")
+  }
+  
+  
+  png(filename = "plot_neutral_cluster_results.png", width = 600, height = 400)
+  par(mfrow = c(2, 2))  
+  
+  sizes <- c(500, 1000, 2500, 5000)
+  
+  # Iterate over each community size and plot barplot
+  for (size in sizes) {
+    mean_abundance <- combined_results[[as.character(size)]]
+    
+    if (is.null(mean_abundance) || length(mean_abundance) == 0) {
+      plot.new()
+      text(0.5, 0.5, paste("No Data for size", size))
+      next  # Skip this loop to avoid barplot errors
+    }
+    
+    barplot(mean_abundance, main = paste("Community Size:", size),
+            xlab = "Abundance Octave", ylab = "Mean Species Abundance",
+            col = "blue", border = "black")
+  }
+  
+  dev.off()
+  
+  print("Plotting complete. Figure saved as plot_neutral_cluster_results.png")
+  
+  return(combined_results)
+}
+
 
 
 # Challenge questions - these are substantially harder and worth fewer marks.
@@ -924,21 +982,103 @@ Challenge_C <- function() {
 
 # Challenge question D
 Challenge_D <- function() {
+  if (!file.exists("combined_results.rda")) {
+    stop("Error: combined_results.rda file not found.")
+  }
   
-  png(filename="Challenge_D", width = 600, height = 400)
-  # plot your graph here
+  load("combined_results.rda")  # Load the processed data
+  
+  # Make sure combined_results exists
+  if (!exists("combined_results")) {
+    stop("Error: combined_results not found in the loaded file.")
+  }
+  
+  colors <- c("500" = "red", "1000" = "blue", "2500" = "green", "5000" = "purple")
+  
+  # Open the PNG device and save the drawing
+  png(filename = "Challenge_D.png", width = 600, height = 400)
+  
+  # Set the drawing range
+  plot(NA, NA, xlim = c(1, length(combined_results[["500"]])), 
+       ylim = c(0, max(sapply(combined_results, max, na.rm = TRUE))), 
+       xlab = "Simulation Generation", ylab = "Mean Species Richness",
+       main = "Mean Species Richness vs Simulation Generation")
+  
+  # Traverse different sizes and draw curves
+  for (size in names(combined_results)) {
+    if (length(combined_results[[size]]) > 0) {
+      lines(1:length(combined_results[[size]]), combined_results[[size]], 
+            col = colors[[size]], lwd = 2, type = "l")
+    }
+  }
+  
+  legend("bottomright", legend = names(colors), col = colors, lty = 1, lwd = 2, title = "Community Size")
   Sys.sleep(0.1)
   dev.off()
+  
+  print("Challenge_D.png has been saved.")
 }
+
 
 # Challenge question E
-Challenge_E <- function() {
+Challenge_E <- function(J, speciation_rate) {
+  # Initialize variables
+  lineages <- as.list(rep(1, J))  # Replace vector with list
+  abundances <- c()  # Record species abundance
+  N <- J  # Number of current independent lineages
+  theta <- speciation_rate * (J - 1) / (1 - speciation_rate)  # Calculate θ
   
-  png(filename="Challenge_E", width = 600, height = 400)
-  # plot your graph here
+  # Record common ancestor simulation run time
+  time_coalescence <- system.time({
+    while (N > 1) {
+      j <- sample(seq_along(lineages), 1)  # Randomly select a lineage
+      randnum <- runif(1)  # Generate random numbers between 0 and 1
+      
+      if (randnum < theta / (theta + N - 1)) {
+        abundances <- c(abundances, as.numeric(lineages[[j]]))  
+        lineages[[j]] <- NULL  
+      } else {
+        # Species amalgamation
+        lineages <- Filter(Negate(is.null), lineages)  
+        remaining_indices <- seq_along(lineages)  # reindex
+        i <- sample(setdiff(remaining_indices, j), 1)
+        
+        # Fix: Make sure i and j are single values
+        lineages[[i]] <- sum(as.numeric(lineages[[i]]), as.numeric(lineages[[j]]))
+        lineages[[j]] <- NULL  
+      }
+      
+      
+      lineages <- Filter(Negate(is.null), lineages)
+      N <- length(lineages)
+    }
+    
+    # Add the last element to the abundances at the end
+    abundances <- c(abundances, unlist(lineages))  # Make sure it's a value
+  })[3]
+  
+  # Record the forward simulation run time
+  time_forward <- system.time({
+    process_neutral_cluster_results()
+  })[3]
+  
+  # plot
+  png(filename="Challenge_E.png", width = 600, height = 400)
+  barplot(sort(abundances, decreasing = TRUE), 
+          main = "Species Abundances from Coalescence Simulation",
+          xlab = "Species Rank", ylab = "Abundance", col = "blue")
   Sys.sleep(0.1)
   dev.off()
   
-  return("type your written answer here")
+  # Return CPU time comparison & explanation
+  return(paste(
+    "Coalescence simulation CPU time:", round(time_coalescence, 3), "seconds.",
+    "\nForward-time simulation CPU time:", round(time_forward, 3), "seconds.",
+    "\nWhy is coalescence faster?",
+    "\nCoalescence simulation traces lineages backward to their most recent common ancestor.",
+    "\nThis method does not require tracking each individual’s fate, reducing computational steps.",
+    "\nIn contrast, forward-time simulations update each individual in every generation, making them much slower."
+  ))
 }
 
+# Challenge_E(J = 100, speciation_rate = 0.01)

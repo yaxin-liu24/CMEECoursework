@@ -1,0 +1,64 @@
+R is about to run
+
+R version 4.4.1 (2024-06-14) -- "Race for Your Life"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: x86_64-conda-linux-gnu
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # Clear workspace and close all graphics
+> rm(list = ls())  
+> graphics.off()
+> 
+> # Load necessary functions
+> source("Yaxin_Liu_HPC_2024_main.R")
+> 
+> # Read the job index from the cluster
+> iter <- as.numeric(Sys.getenv("PBS_ARRAY_INDEX"))  
+> 
+> #iter <- 1  
+> 
+> # Set a unique random seed
+> set.seed(iter)
+> 
+> # Assign community size based on iter
+> if (iter <= 25) {
++   size <- 500
++ } else if (iter <= 50) {
++   size <- 1000
++ } else if (iter <= 75) {
++   size <- 2500
++ } else {
++   size <- 5000
++ }
+> 
+> # Construct a unique filename 
+> output <- paste("neutral_output_", iter, ".rda", sep="")
+> print(paste("Output file:", output))
+[1] "Output file: neutral_output_20.rda"
+> 
+> # Run the simulation and store the result
+> neutral_cluster_run(0.004285,size,5,1,size/10,8*size,output)
+> 
+> 
+R has finished running
+
+============================================
+
+        Job resource usage summary 
+
+                 Memory (GB)    NCPUs
+ Requested  :         1             1
+ Used       :         0 (peak)   0.87 (ave)
+
+============================================
