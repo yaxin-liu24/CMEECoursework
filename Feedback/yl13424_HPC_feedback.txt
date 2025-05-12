@@ -1,0 +1,83 @@
+HPC long practical feedback for Yaxin ( Yaxin Liu ) 2025
+ 
+email : yaxin.liu24@imperial.ac.uk
+username : yl13424
+ 
+Your final mark is : 79.7 %
+ 
+Mark allocation break down
+1) Technically correct answers to all questions worth 60 % of final grade
+Your mark :  51.7 /60
+2) Quality of free text answers worth 8 % of final grade
+Your mark :  5.4 /8
+3) Quality of graphical outputs worth 8 % of final grade
+Your mark :  8.6 /10
+4) Quality of code worth 8 % of final grade
+Your mark :  6.5 /8
+5) Answers to challenge questions worth 16 % of final grade
+Your mark :  7.6 /14
+ 
+Marks for main questions
+Q 0 :    3 / 3
+Q 1 :    2.5 / 4    comments: One of the values in the matrix was entered wrongly which resulted in slower growth. Also, the explanation isn't quite correct. This isn't about high reproduction rates as much as it's about adults being the ones doing the reproduction. Stability is the same for both systems over time and the text seems to suggest that the evenly distribution result is more stable in the long term (which is not the case).
+Q 2 :    2 / 3    comments: The graph isn't correct because the wrong growth matrix was used. However if I correct the copy error in the matrix everything else was excellent
+Q 3 :    10 / 10
+Q 4 :    10 / 10
+Q 5 :    5.5 / 8    comments: qualitatively correct but the quantitative result was wrong probably because of the same issues as earlier questions.  The text answer was descriptive but didn't mention anything about why the model results in these dynamics
+Q 6 :    5 / 10    comments: the text answer was correct and the qualitative result was correct but the data was quantitatively wrong by a very substantial margin.  I think most likely because the compute_mean_population function is incorrect
+Q 7 :    2 / 2
+Q 8 :    1 / 1
+Q 9 :    1 / 1
+Q 10 :    2 / 2
+Q 11 :    2 / 2
+Q 12 :    2 / 2
+Q 13 :    2 / 2
+Q 14 :    2 / 3    comments: text explanation was a bit confused and incomplete - it doesn't really give the reason for the absorbing state which is mostly about the fact that species must eventually go extinct by random drift and can never be replaced due to no speciation.
+Q 15 :    3 / 3
+Q 16 :    1 / 1
+Q 17 :    1 / 1
+Q 18 :    4 / 4
+Q 19 :    3 / 3
+Q 20 :    3 / 3
+Q 21 :    2 / 2
+Q 22 :    4 / 4
+Q 23 :    6 / 6
+Q 24 :    6 / 6
+Q 25 :    10 / 10
+Q 26 :    5 / 10    comments: first octaves were correct but unfortunately last few were not - because of the data processing code in this question (RDA files from the cluster looked OK). The long list of warnings thrown by R when running the code should have been a strong indicator something wasn't right - especially where the warnings are about array indexing (as they are here)
+          ---------
+Total     100 / 116
+          ---------
+ 
+Marks for text quality :  5.4 /8
+Comments...
+In question 1 good, well written, but with some errors of understanding.
+In question 2 excellent
+In question 5 short and does not show understanding around why we see what we see
+In question 6 very good, gets at the 'why' but could have gone deeper.
+In question 14 good attempt but doesn't get deep enough into 'why' to show full understanding
+In question 18 excellent, would have been nice to include *dynamic* equilibrium concept from lectures.
+In question 22 excellent, would have been nice to talk about dynamic equilibrium and address specifically the equilibrium of species abundances and how this comes about (the answer is related to, but not identical to the answer about richness given earlier)
+ 
+Marks for graphics quality :  8.6 /10
+Comments...
+In question 1 excellent, would be nice to no box around the legend from an aesthetic perspective
+In question 2 excellent though I prefer axes to grid
+In question 5 excellent quality graph albeit with wrong data
+In question 6 very good though I'd prefer axes (not grid) and for the legend to feature as a smaller proportion of the available space, also 'initial condition 3' is meaningless to fresh eyes looking at the graph in isolation - could cut that and just say only what the initial condition actually is.
+In question 14 excellent
+In question 18 would be nice to get rid of the box on the legend but the main issue is the y axis cut off part of the data
+In question 22 no octave labels (1,2-3,4-7 and so on), shorthand panel titles that are not clear to reader ('init')
+In question 26 very good but no octave labels
+ 
+Marks for code quality :  6.5 /8
+Comments...
+generally good and well commented but could have been better structured, avoiding nested functions
+ 
+Marks for challenge questions :  7.6 /14
+Comments...
+challenge question A, very good attempt but the data seems wrong looks like we have four panels for different cases but all data is plotted on all four panels (instead of correct sorting of the data), It's not good that the function spews out lot of printing to the console as well'
+challenge question B, good on the simulation side but graph cuts off data (y axis starts with too large values) and equilibrium detection was wrong - this ought to have been clear from looking at the graph.
+challenge question C, y axis cuts off some data and x axis probably doesn't cut enough reducing focus on the interesting parts of the data (approach to equilibrium)
+challenge question D, nice attempt but this data is not a time series of richness for sure, it looks like species abundances
+challenge question E, nice attempt / start but end result is incorrect and incomplete - the question was to compare forward and coalescence simulation results
