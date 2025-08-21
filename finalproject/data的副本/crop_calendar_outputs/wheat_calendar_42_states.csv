@@ -1,0 +1,85 @@
+state,season,planting_doy,harvest_doy
+New Mexico,winter,237.0,166.0
+South Dakota,winter,244.0,187.0
+California,winter,288.0,152.0
+Kentucky,winter,266.0,163.0
+Alabama,winter,275.0,121.0
+Georgia,winter,278.0,140.0
+Arkansas,winter,276.0,159.0
+Pennsylvania,winter,242.0,186.0
+Missouri,winter,263.0,166.0
+Colorado,winter,237.0,176.0
+Utah,winter,232.0,191.0
+Oklahoma,winter,246.0,156.0
+Tennessee,winter,268.0,161.0
+Wyoming,winter,235.0,194.0
+New York,winter,253.0,196.0
+Indiana,winter,263.0,171.0
+Kansas,winter,253.0,166.0
+Idaho,winter,251.0,204.0
+Nevada,winter,248.0,196.0
+Illinois,winter,272.0,173.0
+Minnesota,winter,244.0,187.0
+Iowa,winter,249.0,175.0
+South Carolina,winter,288.0,146.0
+Delaware,winter,278.0,173.0
+Michigan,winter,256.0,195.0
+Florida,winter,288.0,121.0
+New Jersey,winter,257.0,182.0
+North Dakota,winter,244.0,187.0
+Maryland,winter,278.0,173.0
+Montana,winter,250.0,209.0
+Arizona,winter,314.0,135.0
+Nebraska,winter,242.0,177.0
+Washington,winter,244.0,196.0
+Texas,winter,243.0,145.0
+Ohio,winter,267.0,182.0
+Wisconsin,winter,248.0,196.0
+Oregon,winter,258.0,196.0
+Mississippi,winter,267.0,148.0
+North Carolina,winter,263.0,149.0
+Virginia,winter,268.0,156.0
+West Virginia,winter,263.0,176.0
+Louisiana,winter,281.0,134.0
+New Mexico,spring,95.0,201.0
+South Dakota,spring,93.0,196.0
+California,spring,95.0,201.0
+Kentucky,spring,103.0,212.0
+Alabama,spring,93.0,196.0
+Georgia,spring,93.0,196.0
+Arkansas,spring,93.0,196.0
+Pennsylvania,spring,103.0,212.0
+Missouri,spring,93.0,196.0
+Colorado,spring,93.0,196.0
+Utah,spring,95.0,201.0
+Oklahoma,spring,93.0,196.0
+Tennessee,spring,93.0,196.0
+Wyoming,spring,80.0,216.0
+New York,spring,103.0,212.0
+Indiana,spring,103.0,212.0
+Kansas,spring,93.0,196.0
+Idaho,spring,80.0,216.0
+Nevada,spring,95.0,201.0
+Illinois,spring,103.0,212.0
+Minnesota,spring,103.0,212.0
+Iowa,spring,93.0,196.0
+South Carolina,spring,103.0,212.0
+Delaware,spring,103.0,212.0
+Michigan,spring,103.0,212.0
+Florida,spring,93.0,196.0
+New Jersey,spring,103.0,212.0
+North Dakota,spring,109.0,216.0
+Maryland,spring,103.0,212.0
+Montana,spring,98.0,219.0
+Arizona,spring,95.0,201.0
+Nebraska,spring,93.0,196.0
+Washington,spring,80.0,216.0
+Texas,spring,93.0,196.0
+Ohio,spring,103.0,212.0
+Wisconsin,spring,103.0,212.0
+Oregon,spring,95.0,201.0
+Mississippi,spring,93.0,196.0
+North Carolina,spring,103.0,212.0
+Virginia,spring,103.0,212.0
+West Virginia,spring,103.0,212.0
+Louisiana,spring,93.0,196.0
